@@ -1,0 +1,7 @@
+{
+  "name": "AeroSim Low-Poly",
+  "description": "A serene, endless low-poly flight simulator where you pilot a vintage aircraft over procedurally generated landscapes. Experience smooth flight physics, dynamic weather, and calming radio chatter from the Gemini Flight Center.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
