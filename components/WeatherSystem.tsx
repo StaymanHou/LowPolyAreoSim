@@ -15,19 +15,21 @@ const WeatherSystem: React.FC<{ playerPosition: THREE.Vector3 }> = ({ playerPosi
   // Transition logic
   useEffect(() => {
     const cycle = () => {
-      // Weighted weather selection: 70% CLEAR, 10% RAIN, 10% SNOW, 10% FOG
-      const weathers: WeatherType[] = [
+      // Weighted selection: 70% CLEAR, 10% RAIN, 10% SNOW, 10% FOG
+      const selectionArray: WeatherType[] = [
         'CLEAR', 'CLEAR', 'CLEAR', 'CLEAR', 'CLEAR', 'CLEAR', 'CLEAR', 
         'RAIN', 
         'SNOW', 
         'FOG'
       ];
-      const next = weathers[Math.floor(Math.random() * weathers.length)];
+      const next = selectionArray[Math.floor(Math.random() * selectionArray.length)];
       setWeather(next);
       (window as any).currentWeather = next;
     };
-    const timer = setInterval(cycle, 45000); // Cycle every 45s
+    
+    // Initial cycle and set interval
     cycle();
+    const timer = setInterval(cycle, 45000); 
     return () => clearInterval(timer);
   }, []);
 

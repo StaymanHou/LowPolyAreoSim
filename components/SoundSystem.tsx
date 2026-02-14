@@ -26,13 +26,17 @@ const SoundSystem: React.FC = () => {
     const initAudio = () => {
       if (initialized.current) return;
       
-      audioCtx.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContextClass) return;
+
+      audioCtx.current = new AudioContextClass();
       const ctx = audioCtx.current;
 
       // Master Output
       masterGain.current = ctx.createGain();
-      // Use 0.2 as fallback for master volume
-      masterGain.current.gain.setValueAtTime((window as any).masterVolume ?? 0.2, ctx.currentTime);
+      // Default to 20%
+      const initialVol = (window as any).masterVolume ?? 0.2;
+      masterGain.current.gain.setValueAtTime(initialVol, ctx.currentTime);
       masterGain.current.connect(ctx.destination);
 
       // --- Engine Sound ---
@@ -54,7 +58,7 @@ const SoundSystem: React.FC = () => {
       engineModGain.current.connect(engineGain.current.gain); 
       
       engineOsc.current.connect(engineGain.current);
-      engineGain.current.connect(masterGain.current); // Route through master
+      engineGain.current.connect(masterGain.current);
       
       engineOsc.current.start();
       engineMod.current.start();
@@ -81,7 +85,7 @@ const SoundSystem: React.FC = () => {
       
       whiteNoise.connect(windFilter.current);
       windFilter.current.connect(windGain.current);
-      windGain.current.connect(masterGain.current); // Route through master
+      windGain.current.connect(masterGain.current);
       whiteNoise.start();
 
       // --- Scrape Sound ---
@@ -98,7 +102,7 @@ const SoundSystem: React.FC = () => {
       
       scrapeNoise.connect(scrapeFilter);
       scrapeFilter.connect(scrapeGain.current);
-      scrapeGain.current.connect(masterGain.current); // Route through master
+      scrapeGain.current.connect(masterGain.current);
       scrapeNoise.start();
 
       initialized.current = true;
@@ -129,7 +133,7 @@ const SoundSystem: React.FC = () => {
       }
       
       osc.connect(gain);
-      gain.connect(masterGain.current); // Impact sounds through master gain
+      gain.connect(masterGain.current);
       osc.start();
       osc.stop(ctx.currentTime + (type === 'crash' ? 0.5 : 1.0));
     };
@@ -162,7 +166,7 @@ const SoundSystem: React.FC = () => {
       }
       if (!hasWon) lastWon = false;
 
-      // Stop engine/wind/scrape loops if the game is paused, crashed, or won
+      // SILENCE continuous sounds if game state is not 'playing'
       if (isPaused || isCrashed || hasWon) {
         engineGain.current?.gain.setTargetAtTime(0, ctx.currentTime, 0.1);
         windGain.current?.gain.setTargetAtTime(0, ctx.currentTime, 0.1);

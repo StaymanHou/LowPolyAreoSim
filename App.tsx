@@ -23,8 +23,9 @@ const App: React.FC = () => {
   useEffect(() => {
     // Initialize global flags
     (window as any).isPaused = false;
+    // Set default volume to 20%
     if ((window as any).masterVolume === undefined) {
-      (window as any).masterVolume = 0.2; // Default to 20%
+      (window as any).masterVolume = 0.2;
     }
     
     // Simulate loading assets
